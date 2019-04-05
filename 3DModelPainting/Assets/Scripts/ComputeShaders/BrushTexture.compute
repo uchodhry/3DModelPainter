@@ -1,0 +1,32 @@
+﻿
+#pragma kernel CSMain
+
+Texture2D<float4> Orignal;
+Texture2D<float4> Brush;
+RWTexture2D<float4> Result;
+float4 color;
+float4 cursor;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+	uint w, h;
+	Brush.GetDimensions(w, h);
+
+	float2 brushPos = float2(cursor.z*cursor.x - w/2, cursor.w*cursor.y - h/2);
+	
+	if (Brush[id.xy - brushPos].w != 0 && cursor.x != -1)
+	{
+		Result[id.xy] = float4(Orignal[id.xy].x*Brush[id.xy - brushPos].x * color.x,
+			Orignal[id.xy].y * Brush[id.xy - brushPos].y * color.y,
+			Orignal[id.xy].z * Brush[id.xy - brushPos].z * color.z,
+			Orignal[id.xy].w) * color.w;
+	}
+	else
+	{
+		Result[id.xy] = float4(Orignal[id.xy].x,
+			Orignal[id.xy].y,
+			Orignal[id.xy].z,
+			Orignal[id.xy].w);
+	}
+}

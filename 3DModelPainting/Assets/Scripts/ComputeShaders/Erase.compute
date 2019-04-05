@@ -1,0 +1,31 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> Orignal;
+RWTexture2D<float4> Result;
+float4 cursor;
+float radius;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+
+	float2 brushPos = float2(cursor.z*cursor.x - radius/2, cursor.w*cursor.y  -radius / 2);
+	
+	if (cursor.x != -1)
+	{
+		Result[id.xy] = float4(Orignal[id.xy].x,
+			Orignal[id.xy].y,
+			Orignal[id.xy].z,
+			Orignal[id.xy].w);
+	}
+	else
+	{
+		Result[id.xy] = float4(Orignal[id.xy].x,
+			Orignal[id.xy].y,
+			Orignal[id.xy].z,
+			Orignal[id.xy].w);
+	}
+}
